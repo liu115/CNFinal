@@ -58,7 +58,7 @@ function load_friends(){
 	friend_list = document.getElementById("friend_list");
 	var tmp = "";
 	for (var i in list){
-		tmp = tmp + "<li id=\""+list[i]+"\" onclick=\"enter_chatroom(this.id)\">"+list[i]+"</li>\n"
+		tmp = tmp + "<li id=\""+list[i]+"\" onclick=\"select_friend(this.id)\">"+list[i]+"</li>\n"
 	}
 	friend_list.innerHTML=tmp;
 }
