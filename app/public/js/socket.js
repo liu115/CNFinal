@@ -18,19 +18,34 @@ function switch_page(index, data){
 	}else if(index ==1){
 		document.location.href=Href+"/login";
 	}else{
-		document.location.href=Href+"/index?token="+data;
+		document.location.href=Href+"/";
 	}
 }
 function login(account, pswd){
-	$.post('/login', { id:account, password:pswd }, function(data){
-		console.log("res:"+data);
-		if(data=="12345"){
-			switch_page(2, data);
+	$.post('/login', { username:account, password:pswd }, function(data){
+		var res = data;//JSON.parse(data);
+		console.log("res:"+res);
+		if(res.success=="true"){//if permitted, and parse token
+			document.cookie="token="+res.token;
+			switch_page(2, res.token);
 		}else{
 			var login_button = document.getElementById("login_button");
 			login_button.style.color="#FF0000";
 		}
 	});
+}
+function register(account, pswd){
+	$.post('/register', {username:account, password:pswd}, function(data){
+		console.log("res:"+data);
+		var res = JSON.parse(data);
+		if(res.success=="true"){//if success
+			switch_page(1);		
+		}else{
+			var submit_button = document.getElementById("register_submit");
+			submit_button.style.color="#FF0000";
+		}
+	});
+	
 }
 function get_login_info(){
 	var account_text = document.getElementById("login_account");
@@ -54,7 +69,7 @@ function get_register_info(){
 		var submit_button = document.getElementById("register_submit");
 		submit_button.style.color="#000000";
 		console.log("equals");
-		switch_page(1);
+		register(account, pswd);
 	}else{
 		var submit_button = document.getElementById("register_submit");
 		submit_button.style.color="#FF0000";
