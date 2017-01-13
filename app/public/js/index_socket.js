@@ -34,11 +34,13 @@ function select_friend(id){
 	document.location.href=tmp;
 }
 function load_friends(list){
-	//var list = [{name:"A", id:"1"},{name:"B", id:"2"},{name:"C", id:"3"}];
 	friend_list = document.getElementById("friend_list");
 	var tmp = "";
 	console.log("list="+list);
+	var myId = readCookie("userId");
 	for (var i in list){
+		if(list[i].userId==myId)
+			continue;
 		tmp = tmp + "<li id=\""+list[i].userId+"\" onclick=\"select_friend(this.id)\">"+list[i].name+"</li>\n"
 	}
 	friend_list.innerHTML=tmp;

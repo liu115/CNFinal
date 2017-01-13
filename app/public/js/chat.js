@@ -10,6 +10,8 @@ var socket = io('//localhost:3000/chat');
 window.onload = init;
 socket.on('init', function (data, fn) {
   console.log("server ping");
+  var json = JSON.stringify({"token":token, "userId":userId});
+  console.log(json);
   fn(JSON.stringify({"token":token, "userId":userId}));
 });
 socket.on('send', function (data) {
@@ -26,12 +28,12 @@ function init(){
 	});
 }
 function request_history(){
-	socket.emit('history', JSON.stringify({"to":friend_id, "token":token}), function(data){
+	socket.emit('history', JSON.stringify({"to":friend_id, "userId":userId, "token":token}), function(data){
 		console.log("history"+data);
 		var res = JSON.parse(data);
 		if(res.success=='true'){
 			var ul = document.getElementById("message");
-			var list = res.message;
+			var list = res.messages;
 			var tmp = "";
 			for(var i in list){
 				tmp = tmp + "<li>"+list[i].from+": "+list[i].content+"</li>";
@@ -52,7 +54,7 @@ function sendmsg(){
 	var msg_box = document.getElementById("msgblock");
 	var msg = msg_box.value;
 	if(msg!=""){
-		socket.emit('send', JSON.stringify({"token":token, "to":friend_id, "content":msg}), function(data){
+		socket.emit('send', JSON.stringify({"token":token, "userId":userId, "to":friend_id, "content":msg}), function(data){
 			if(data.success=='true'){
 				msg_box.value="";
 				console.log("send");	
