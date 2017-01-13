@@ -11,6 +11,7 @@ var mongoose = require('mongoose');
 var cookieParser = require('cookie-parser')
 
 var User = require('./models/user');
+var Message = require('./models/message');
 
 mongoose.Promise = global.Promise;
 
@@ -68,6 +69,7 @@ io.on('connection', function (socket) {
     });
     console.log(data.token);
   });
+
   socket.on('disconnect', function () {
     console.log('disconnect with client');
   });
@@ -76,6 +78,25 @@ io.on('connection', function (socket) {
 chat_socket.on('connection', function (socket) {
   console.log('connect /chat with ');
   //console.log(socket.handshake.with);
+  socket.on('history', function(data, fn) {
+    console.log(data);
+    var json = JSON.parse(data);
+    var token = json.token, target = json.to;
+    if (target === null) return fn(JSON.stringify({ success: 'false' }));
+    User.findById(token, 'userId', (err, user) => {
+      var userId = user.userId;
+      Message.find({ $or: [{to: userId}, {from: userId}] }).exec((err, messages) => {
+        var sendback = {
+          success: 'true',
+          messages: messages.map(msg => ({
+            from: (userId == msg.from) ? 'me' : 'other',
+            content: msg.content
+          }))
+        };
+        return fn(JSON.stringify(sendback));
+      });
+    });
+  });
   socket.on('disconnect', function () {
     console.log('disconnect with client');
   });
