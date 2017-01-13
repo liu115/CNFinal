@@ -2,19 +2,19 @@ var url = location.href;
 console.log("url="+url);
 var tmp = url.split("/");
 var token = readCookie("token");
+var userId = readCookie("userId");
 var friend_id = tmp[tmp.length-1];
 console.log("token:"+token);
 console.log("id:"+friend_id);
-var socket = io('//localhost:3000/chat', {to:friend_id});
+var socket = io('//localhost:3000/chat');
 window.onload = init;
-socket.on('init', function (data) {
-  console.log(data);
-  console.log(JSON.parse(data).text);
-  socket.emit('init ack');
+socket.on('init', function (data, fn) {
+  console.log("server ping");
+  fn(JSON.stringify({"token":token, "userId":userId}));
 });
-socket.on('message', function (data) {
+socket.on('send', function (data) {
   console.log(data);
-  socket.emit('message ack');
+  update_box(data.name, data.content);
 });
 function init(){
 	request_history();
@@ -42,15 +42,32 @@ function request_history(){
 		}
 	});
 }
+function update_box(name, content){
+	var ul = document.getElementById("message");
+	var tmp = ul.innerHTML;
+	tmp = tmp + "<li>"+name+": "+content+"</li>";
+	ul.innerHTML=tmp;
+}
 function sendmsg(){
 	var msg_box = document.getElementById("msgblock");
 	var msg = msg_box.value;
 	if(msg!=""){
-		socket.emit('message', JSON.stringify({"token":token, "id":friend_id, "message":msg}), function(){
-			msg_box.value="";
-			console.log("send");	
+		socket.emit('send', JSON.stringify({"token":token, "to":friend_id, "content":msg}), function(data){
+			if(data.success=='true'){
+				msg_box.value="";
+				console.log("send");	
+			}else{
+				sendmsg();
+			}
 		});
 	}
+}
+function goback(){
+	var tmp = url;
+	var tmp2 = tmp.split("/chat/");
+	console.log("tmp:"+tmp);
+	console.log("tmp2:"+tmp2);
+	document.location.href=tmp2[0];
 }
 function readCookie(name) {
 	name += '=';

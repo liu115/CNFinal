@@ -27,6 +27,7 @@ function login(account, pswd){
 		console.log("res:"+res);
 		if(res.success=="true"){//if permitted, and parse token
 			document.cookie="token="+res.token;
+			document.cookie="userId="+res.userId;
 			switch_page(2, res.token);
 		}else{
 			var login_button = document.getElementById("login_button");
@@ -37,7 +38,7 @@ function login(account, pswd){
 function register(account, pswd){
 	$.post('/register', {username:account, password:pswd}, function(data){
 		console.log("res:"+data);
-		var res = JSON.parse(data);
+		var res = (data);
 		if(res.success=="true"){//if success
 			switch_page(1);		
 		}else{

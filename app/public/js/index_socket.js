@@ -1,17 +1,7 @@
 var socket = io('//localhost:3000');
-var Href = "http://localhost:3000"
-socket.on('init', function (data) {
-	console.log(data);
-	console.log(JSON.parse(data).text);
-	socket.emit('init ack');
-	load_friends();
-});
+var Href = location.href;
 
 
-socket.on('message', function (data) {
-	console.log(data);
-	socket.emit('message ack');
-});
 window.onload = init;
 function init(){
 	var url = location.href;
@@ -53,4 +43,12 @@ function load_friends(list){
 	}
 	friend_list.innerHTML=tmp;
 }
+function logout(){
+	delete_cookie("token");
+	delete_cookie("userId");
+	document.location.href=Href+"login";
+}
+function delete_cookie(name) {
+	document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+};
 
