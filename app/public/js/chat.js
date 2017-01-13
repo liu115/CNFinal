@@ -10,6 +10,8 @@ var socket = io('//localhost:3000/chat');
 window.onload = init;
 socket.on('init', function (data, fn) {
   console.log("server ping");
+  var json = JSON.stringify({"token":token, "userId":userId});
+  console.log(json);
   fn(JSON.stringify({"token":token, "userId":userId}));
 });
 socket.on('send', function (data) {
