@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var autoIncrement = require('mongoose-auto-increment');
 var setting = require('../config/config.js');
 const dburl = `mongodb://${setting.username}:${setting.password}@${setting.mongoUrl}`;
 
@@ -7,6 +8,8 @@ var userDB = mongoose.createConnection(`${dburl}/myusers/?ssl=true`, (err) => {
     console.log('Users DB Connection Error: ' + err);
   }
 });
+
+autoIncrement.initialize(userDB);
 
 const options = {
   timestamps: {
@@ -21,4 +24,5 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, require: true }
 }, options);
 
+UserSchema.plugin(autoIncrement.plugin, { model: 'User', field: 'userId'});
 module.exports = userDB.model('User', UserSchema);

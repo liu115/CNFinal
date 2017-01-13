@@ -7,13 +7,19 @@ router.post('/', (req, res) => {
   const { username, password } = req.body;
   console.log(username);
   console.log(password);
+  User.findOne({ username: username }, (err, data) => {
+    if (err) console.log('find error');
+    if (data === null) return 0;
+    else res.json({ success: 'false' });
+  });
 
   User.create({
     username,
     password
   }, (err, user) => {
     if (err) return res.status(500).send(err);
-    return res.json(user);
+    console.log(user);
+    return res.json({ success: 'true' });
   });
 });
 
@@ -25,7 +31,7 @@ router.get('/', function(req, res) {
 
 // Only for testing
 router.get('/list/user', (req, res) => {
-  User.find().exec((err, users) => {
+  User.find({}, 'username').exec((err, users) => {
     res.json(users);
   });
 });
