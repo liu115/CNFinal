@@ -9,18 +9,14 @@ router.post('/', (req, res) => {
   console.log(password);
   User.findOne({ username: username }, (err, data) => {
     if (err) console.log('find error');
-    if (data === null) return 0;
-    else res.json({ success: 'false' });
+    if (data !== null) res.json({ success: 'false', message: 'username duplicate' });
+
+    User.create({ username: username, password: password }, err1 => {
+      if (err1) return res.status(500).send(err1);
+      return res.json({ success: 'true' });
+    });
   });
 
-  User.create({
-    username,
-    password
-  }, (err, user) => {
-    if (err) return res.status(500).send(err);
-    console.log(user);
-    return res.json({ success: 'true' });
-  });
 });
 
 router.get('/', function(req, res) {

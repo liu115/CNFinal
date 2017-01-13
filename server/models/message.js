@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var autoIncrement = require('mongoose-auto-increment');
+// var autoIncrement = require('mongoose-auto-increment');
 var setting = require('../config/config');
 const dburl = `mongodb://${setting.username}:${setting.password}@${setting.mongoUrl}`;
 
@@ -9,7 +9,7 @@ var msgDB = mongoose.createConnection(`${dburl}/messages/?ssl=true`, (err) => {
   }
 });
 
-autoIncrement.initialize(msgDB);
+// autoIncrement.initialize(msgDB);
 
 const options = {
   timestamps: {
@@ -25,5 +25,5 @@ const MsgSchema = new mongoose.Schema({
   to: { type: String, require: true }
 }, options);
 
-MsgSchema.plugin(autoIncrement.plugin, { model: 'Message', field: 'msgId'});
+// MsgSchema.plugin(autoIncrement.plugin, { model: 'Message', field: 'msgId'});
 module.exports = msgDB.model('Message', MsgSchema);
