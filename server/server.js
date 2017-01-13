@@ -75,16 +75,43 @@ io.on('connection', function (socket) {
   });
 });
 
+var client = {};
 chat_socket.on('connection', function (socket) {
+  socket.emit('init', null, function (data) {
+    console.log(data);
+
+    var user = JSON.parse(data);
+    console.log('user');
+    if (client[`c${user.userId}`] === undefined) {
+      User.findById(user.token, (err, finduser) => {
+        if (finduser.userId == user.userId) {
+          client[`c${user.userId}`] = {
+            token: user.token,
+            socketId: socket.id
+          };
+          console.log(`c${user.userId} has socket ${client[`c${user.userId}`].socketId}`);
+        }
+      });
+    }
+    else {
+      if (client[`c${user.userId}`].token == user.token) {
+        client[`c${user.userId}`].socketId = socket.id;
+        console.log(`c${user.userId} has socket ${client[`c${user.userId}`].socketId}`);
+      }
+    }
+    console.log(client);
+  });
   console.log('connect /chat with ');
-  //console.log(socket.handshake.with);
+  // console.log('with' + socket.handshake.to);
   socket.on('history', function(data, fn) {
     console.log(data);
     var json = JSON.parse(data);
     var token = json.token, target = json.to;
     if (target === null) return fn(JSON.stringify({ success: 'false' }));
     User.findById(token, 'userId', (err, user) => {
+      if (user === null) return 0;
       var userId = user.userId;
+      console.log(socket.id);
       Message.find({ $or: [{to: userId}, {from: userId}] }).exec((err, messages) => {
         var sendback = {
           success: 'true',
@@ -96,6 +123,9 @@ chat_socket.on('connection', function (socket) {
         return fn(JSON.stringify(sendback));
       });
     });
+  });
+  socket.on('send', function () {
+    console.log('something send');
   });
   socket.on('disconnect', function () {
     console.log('disconnect with client');

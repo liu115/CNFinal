@@ -15,7 +15,8 @@ router.post('/', (req, res) => {
     if (data.password === password) {
       return res.json({
         success: 'true',
-        token: data._id
+        token: data._id,
+        userId: data.userId
       });
     }
     console.log(data);
