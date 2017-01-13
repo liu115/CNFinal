@@ -78,10 +78,9 @@ io.on('connection', function (socket) {
 var client = {};
 chat_socket.on('connection', function (socket) {
   socket.emit('init', null, function (data) {
-    console.log(data);
-
     var user = JSON.parse(data);
     console.log('user');
+    console.log(user);
     if (client[`c${user.userId}`] === undefined) {
       User.findById(user.token, (err, finduser) => {
         if (finduser.userId == user.userId) {
@@ -89,14 +88,14 @@ chat_socket.on('connection', function (socket) {
             token: user.token,
             socketId: socket.id
           };
-          console.log(`c${user.userId} has socket ${client[`c${user.userId}`].socketId}`);
+          console.log(`c${user.userId} has socket ${user.socketId}`);
         }
       });
     }
     else {
       if (client[`c${user.userId}`].token == user.token) {
-        client[`c${user.userId}`].socketId = socket.id;
-        console.log(`c${user.userId} has socket ${client[`c${user.userId}`].socketId}`);
+        client[`c${user.userId}`].sockId = socket.id;
+        console.log(`c${user.userId} has socket ${user.socketId}`);
       }
     }
     console.log(client);
@@ -111,6 +110,7 @@ chat_socket.on('connection', function (socket) {
     User.findById(token, 'userId', (err, user) => {
       if (user === null) return 0;
       var userId = user.userId;
+      client.userId = socket.id;
       console.log(socket.id);
       Message.find({ $or: [{to: userId}, {from: userId}] }).exec((err, messages) => {
         var sendback = {

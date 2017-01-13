@@ -34,8 +34,8 @@ router.get('/list/user', (req, res) => {
 router.get('/list/msg', (req, res) => {
   // Message.create({
   //   content: 'aavsv',
-  //   from: '1',
-  //   to: '0'
+  //   from: '12345',
+  //   to: '97734'
   // }, (err, user) => {
   //   if (err) console.log(err);
   // });
